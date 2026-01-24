@@ -9,8 +9,14 @@ import 'widgets/glass_card.dart';
 class DashboardScreen extends StatelessWidget {
   final DashboardData data;
   final VoidCallback onRefresh;
+  final bool enableAnimations;
 
-  const DashboardScreen({super.key, required this.data, required this.onRefresh});
+  const DashboardScreen({
+    super.key, 
+    required this.data, 
+    required this.onRefresh,
+    this.enableAnimations = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +33,17 @@ class DashboardScreen extends StatelessWidget {
       );
     }
 
-    final latest = data.missionSummaries.first;
-
-    // Use LayoutBuilder to ensure we fit the screen constraints
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Container(
+        return _buildDashboard(context, constraints);
+      },
+    );
+  }
+
+  Widget _buildDashboard(BuildContext context, BoxConstraints constraints) {
+    final latest = data.missionSummaries.first;
+
+    return Container(
           width: constraints.maxWidth,
           height: constraints.maxHeight,
           padding: const EdgeInsets.all(24.0),
@@ -47,11 +58,15 @@ class DashboardScreen extends StatelessWidget {
                   // Branding
                   Row(
                     children: [
-                      Image.asset(
-                        'assets/logo.png',
-                        height: 48,
-                        filterQuality: FilterQuality.high,
-                        isAntiAlias: true,
+                      Transform.rotate(
+                        angle: 0.0001, // Micro-rotation to force anti-aliasing
+                        child: Image.asset(
+                          'assets/logo.png',
+                          height: 96,
+                          cacheHeight: 96,
+                          filterQuality: FilterQuality.medium,
+                          isAntiAlias: true,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       const Text('PXG INTELLIGENCE', style: TextStyle(color: Colors.white, fontSize: 12, letterSpacing: 4, fontWeight: FontWeight.bold)),
@@ -267,8 +282,6 @@ class DashboardScreen extends StatelessWidget {
             ],
           ),
         );
-      },
-    );
   }
 
 
