@@ -28,6 +28,19 @@ class PerformanceRadar extends StatelessWidget {
     final plotPace = normalize(pace);
     final plotDiff = normalize(diff);
 
+    // Interpretation Helpers
+    String getPaceDesc(double val) {
+      if (val < 2.8) return '(Too Slow)';
+      if (val > 3.2) return '(Too Fast)';
+      return '(Perfect)';
+    }
+
+    String getDiffDesc(double val) {
+       if (val < 2.8) return '(Too Easy)';
+       if (val > 3.2) return '(Too Hard)';
+       return '(Perfect)';
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calculate effective radius for the chart area
@@ -85,8 +98,8 @@ class PerformanceRadar extends StatelessWidget {
                     case 0: return const RadarChartTitle(text: 'FUN');
                     case 1: return const RadarChartTitle(text: 'TECH');
                     case 2: return const RadarChartTitle(text: 'COORD');
-                    case 3: return const RadarChartTitle(text: 'PACE'); 
-                    case 4: return const RadarChartTitle(text: 'DIFF'); 
+                    case 3: return RadarChartTitle(text: 'PACE\n${getPaceDesc(pace)}'); 
+                    case 4: return RadarChartTitle(text: 'DIFF\n${getDiffDesc(diff)}'); 
                     default: return const RadarChartTitle(text: '');
                   }
                 },
