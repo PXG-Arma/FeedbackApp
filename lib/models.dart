@@ -41,12 +41,12 @@ class FeedbackEntry {
     }
 
     return FeedbackEntry(
-      opName: json['OpName']?.toString() ?? '',
+      opName: json['OpName']?.toString() ?? json['Operation']?.toString() ?? '',
       date: json['Date']?.toString() ?? '',
       time: json['Time']?.toString() ?? '',
-      opid: json['opid']?.toString() ?? '',
-      player: json['player']?.toString() ?? '',
-      role: json['Role']?.toString() ?? '',
+      opid: json['opid']?.toString() ?? json['OPID']?.toString() ?? '',
+      player: json['player']?.toString() ?? json['Zeus']?.toString() ?? '',
+      role: json['Role']?.toString() ?? (json['Zeus'] != null ? 'Zeus' : ''),
       key: json['Key']?.toString() ?? '',
       fun: parseDouble(json['Fun (1-5)'], 0.0),
       tech: parseDouble(json['Tech (1-5)'], 0.0),
