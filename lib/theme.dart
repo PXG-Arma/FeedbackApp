@@ -5,7 +5,7 @@ class PhoenixTheme {
   static const Color primary = Color(0xFFFF6B00); // More vibrant Phoenix Orange
   static const Color secondary = Color(0xFFFF2D00); // Phoenix Red
   static const Color accent = Color(0xFFFFD600); // Phoenix Gold
-  static const Color background = Color(0xFF030508);
+  static const Color background = Color(0xFF000000);
   static const Color cardBg = Color(0x1AFFFFFF); // Semi-transparent for glass effect
   static const Color textPrimary = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0xFF94A3B8);

@@ -46,11 +46,11 @@ class _MainContainerState extends State<MainContainer> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: RadialGradient(
-            center: Alignment(0.8, -0.8),
-            radius: 1.2,
+            center: Alignment(0.6, -0.6),
+            radius: 1.4,
             colors: [
-              Color(0x33FF6B00), // Subtle Phoenix Glow
-              Color(0xFF030508),
+              Color(0xFF100500), // Almost Black Ember
+              Colors.black,
             ],
           ),
         ),

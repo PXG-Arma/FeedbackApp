@@ -148,11 +148,8 @@ class DashboardScreen extends StatelessWidget {
                     // C. Rating (Right)
                     Expanded(
                       flex: 2,
-                      child: Container(
-                        decoration: PhoenixTheme.glassDecoration(opacity: 0.05).copyWith(
-                          color: PhoenixTheme.primary.withOpacity(0.1),
-                          border: Border.all(color: PhoenixTheme.primary.withOpacity(0.3)),
-                        ),
+                      child: GlassCard(
+                        padding: EdgeInsets.zero,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
