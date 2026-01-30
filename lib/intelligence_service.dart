@@ -16,11 +16,19 @@ class IntelligenceService {
 
       final response = await http.get(Uri.parse(webhookUrl));
       if (response.statusCode == 200) {
-        // Expected structure is { "feedback": [...], "metadata": [...] }
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final decoded = json.decode(response.body);
         
-        final List<dynamic> feedbackList = jsonResponse['feedback'] ?? [];
-        final List<dynamic> metadataList = jsonResponse['metadata'] ?? [];
+        List<dynamic> feedbackList = [];
+        List<dynamic> metadataList = [];
+
+        if (decoded is Map<String, dynamic>) {
+          // New format: { "feedback": [], "metadata": [] }
+          feedbackList = decoded['feedback'] ?? [];
+          metadataList = decoded['metadata'] ?? [];
+        } else if (decoded is List) {
+          // Legacy format: [...]
+          feedbackList = decoded;
+        }
 
         final entries = feedbackList.map((j) => FeedbackEntry.fromJson(j)).toList();
         final metadata = metadataList.map((j) => MissionMetadata.fromJson(j)).toList();

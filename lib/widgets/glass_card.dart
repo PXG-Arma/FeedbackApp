@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../theme.dart';
 
 class GlassCard extends StatelessWidget {
   final Widget child;
@@ -26,18 +27,18 @@ class GlassCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(opacity),
+            color: PhoenixTheme.cardBg, // Using the more opaque cardBg from theme
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1,
+              color: Colors.white.withOpacity(0.12), // Slightly brighter border for definition
+              width: 0.5,
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withOpacity(0.1),
-                Colors.white.withOpacity(0.02),
+                Colors.white.withOpacity(0.05),
+                Colors.transparent,
               ],
             ),
           ),
@@ -47,3 +48,5 @@ class GlassCard extends StatelessWidget {
     );
   }
 }
+
+

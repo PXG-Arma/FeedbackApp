@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PhoenixTheme {
-  static const Color primary = Color(0xFFFF6B00); // More vibrant Phoenix Orange
-  static const Color secondary = Color(0xFFFF2D00); // Phoenix Red
+  static const Color primary = Color(0xFFFF6B00); // Vibrant Phoenix Orange
+  static const Color secondary = Color(0xFF22C55E); // Emerald Green (Replaces Burning Red)
+  static const Color tertiary = Color(0xFF78350F); // Coffee / Cafe Brown
   static const Color accent = Color(0xFFFFD600); // Phoenix Gold
-  static const Color background = Color(0xFF000000);
-  static const Color cardBg = Color(0x1AFFFFFF); // Semi-transparent for glass effect
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFF94A3B8);
-  static const Color border = Color(0x33FFFFFF);
+  static const Color background = Color(0xFF070B14); // Deep Navy Base
+  static const Color backgroundLight = Color(0xFF0F172A); // Slightly lighter navy
+  static const Color cardBg = Color(0xCC1E293B); // Increased opacity (0.8) for better readability
+  static const Color textPrimary = Color(0xFFF8FAFC);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color border = Color(0x1FFFFFFF);
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -20,7 +22,7 @@ class PhoenixTheme {
       colorScheme: const ColorScheme.dark(
         primary: primary,
         secondary: secondary,
-        tertiary: accent,
+        tertiary: tertiary,
         surface: background,
         onSurface: textPrimary,
       ),
@@ -32,7 +34,7 @@ class PhoenixTheme {
           bodyMedium: TextStyle(color: textSecondary),
         ),
       ).copyWith(
-        titleLarge: GoogleFonts.orbitron(color: primary, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+        titleLarge: GoogleFonts.orbitron(color: primary, fontWeight: FontWeight.w900, letterSpacing: 1.5, fontSize: 18),
         titleMedium: GoogleFonts.orbitron(color: accent, fontWeight: FontWeight.bold),
         headlineMedium: GoogleFonts.orbitron(color: textPrimary, fontWeight: FontWeight.w900),
       ),
@@ -43,7 +45,8 @@ class PhoenixTheme {
     return BoxDecoration(
       color: Colors.white.withOpacity(opacity),
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: Colors.white.withOpacity(0.1)),
+      border: Border.all(color: Colors.white.withOpacity(0.05)),
     );
   }
 }
+

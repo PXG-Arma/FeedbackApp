@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models.dart';
 import '../theme.dart';
 import 'widgets/radar_chart.dart';
 import 'widgets/glass_card.dart';
+import 'widgets/mesh_background.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardData data;
@@ -43,13 +45,18 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildDashboard(BuildContext context, BoxConstraints constraints) {
     final latest = data.missionSummaries.first;
 
-    return Container(
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+    return Scaffold(
+      backgroundColor: Colors.transparent, // Let mesh background show
+      body: Stack(
+        children: [
+          const MeshBackground(),
+          Container(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 32.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
               // 1. Top Header (Logo + Title LEFT, Refresh RIGHT)
               Row(
@@ -105,11 +112,11 @@ class DashboardScreen extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 latest.opName.toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 80,
+                                style: GoogleFonts.orbitron(
+                                  fontSize: 84,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
-                                  height: 0.9,
+                                  height: 0.85,
                                   letterSpacing: -2.0,
                                 ),
                               ),
@@ -278,8 +285,11 @@ class DashboardScreen extends StatelessWidget {
               ),
             ],
           ),
-        );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
 
   Widget _buildPersonnelCard(String title, String name, IconData icon, Color color) {
