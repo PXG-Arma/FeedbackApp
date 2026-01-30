@@ -29,6 +29,7 @@ class FeedbackEntry {
     this.diff = 3.0,
   });
 
+
   factory FeedbackEntry.fromJson(Map<String, dynamic> json) {
     double parseDouble(dynamic value, double defaultValue) {
       if (value == null) return defaultValue;
@@ -57,6 +58,27 @@ class FeedbackEntry {
     );
   }
 }
+
+class MissionMetadata {
+  final String opId;
+  final String zeus;
+  final String pl;
+
+  MissionMetadata({
+    required this.opId,
+    required this.zeus,
+    required this.pl,
+  });
+
+  factory MissionMetadata.fromJson(Map<String, dynamic> json) {
+    return MissionMetadata(
+      opId: json['OPID']?.toString() ?? '',
+      zeus: json['concatenated_Zeus']?.toString() ?? '',
+      pl: json['concatenated_PL']?.toString() ?? '',
+    );
+  }
+}
+
 
 class MissionSummary {
   final String opName;

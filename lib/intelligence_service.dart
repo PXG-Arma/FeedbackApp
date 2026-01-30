@@ -7,31 +7,39 @@ class IntelligenceService {
   // To be replaced by the actual n8n webhook URL
   static const String webhookUrl = 'https://www.pxghub.com/webhook/feedbackinfo';
 
+
   static Future<DashboardData> fetchData() async {
     try {
-      // Check if we have data in the URL (like the React app did)
-      // This is useful for passing data directly from n8n to the web app
-      // via URL parameters if we don't want to make an extra HTTP call.
-      
-      // For now, let's implement the HTTP fetch as requested for n8n.
-      // If the URL is empty or invalid, we fallback to mock data for demonstration.
-      
       if (webhookUrl.contains('YOUR_N8N')) {
-        return DataProcessor.process(getMockData());
+        return DataProcessor.process(getMockData(), getMockMetadata());
       }
 
       final response = await http.get(Uri.parse(webhookUrl));
       if (response.statusCode == 200) {
-        final List<dynamic> jsonList = json.decode(response.body);
-        final entries = jsonList.map((j) => FeedbackEntry.fromJson(j)).toList();
-        return DataProcessor.process(entries);
+        // Expected structure is { "feedback": [...], "metadata": [...] }
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        
+        final List<dynamic> feedbackList = jsonResponse['feedback'] ?? [];
+        final List<dynamic> metadataList = jsonResponse['metadata'] ?? [];
+
+        final entries = feedbackList.map((j) => FeedbackEntry.fromJson(j)).toList();
+        final metadata = metadataList.map((j) => MissionMetadata.fromJson(j)).toList();
+
+        return DataProcessor.process(entries, metadata);
       } else {
         throw Exception('Failed to load intelligence data');
       }
     } catch (e) {
       print('Error fetching data: $e');
-      return DataProcessor.process(getMockData());
+      return DataProcessor.process(getMockData(), getMockMetadata());
     }
+  }
+
+  static List<MissionMetadata> getMockMetadata() {
+    return [
+      MissionMetadata(opId: 'op123', zeus: 'Johanpe', pl: 'AquaFox'),
+      MissionMetadata(opId: 'op122', zeus: 'ZeusAlpha', pl: 'LeaderBeta'),
+    ];
   }
 
   static List<FeedbackEntry> getMockData() {

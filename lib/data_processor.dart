@@ -1,7 +1,8 @@
 import 'models.dart';
 
+
 class DataProcessor {
-  static DashboardData process(List<FeedbackEntry> data) {
+  static DashboardData process(List<FeedbackEntry> data, List<MissionMetadata> metadata) {
     if (data.isEmpty) {
       return DashboardData(
         missionSummaries: [],
@@ -26,22 +27,13 @@ class DataProcessor {
           'count': 0,
           'date': entry.date,
           'comments': <String>[],
-          'zeusNames': <String>{},
-          'plNames': <String>{},
+          // We will fill these later from metadata if available
+          'opId': entry.opid, // Capture OpID from feedback if possible to link
         };
       }
       
       var m = missionMap[entry.opName]!;
       
-      // Always capture roles for identification (even from metadata rows)
-      String roleLower = entry.role.toLowerCase();
-      if (roleLower.contains('zeus')) {
-        m['zeusNames'].add(entry.player);
-      }
-      if (roleLower.contains('platoon lead')) {
-        m['plNames'].add(entry.player);
-      }
-
       // Metadata Detection: If Fun & Tech are 0, it's a metadata row (or invalid feedback)
       // Do NOT add to averages
       bool isMetadata = (entry.fun == 0 && entry.tech == 0);
@@ -63,12 +55,30 @@ class DataProcessor {
     // Create Mission Summaries
     final missionSummaries = missionMap.entries.map((e) {
       final val = e.value;
+      final opName = e.key;
+      final opId = val['opId'] as String;
+      
       final count = val['count'] as int;
-      // Prevent division by zero if a mission only has metadata rows
       final safeCount = count == 0 ? 1 : count; 
 
+      // Find metadata for this mission
+      // Try linking by OpID first, fallback to Name could be tricky if names vary slightly
+      // But assuming OpID is consistent in both lists.
+      MissionMetadata? meta;
+      try {
+        meta = metadata.firstWhere((m) => m.opId == opId);
+      } catch (_) {
+        // Fallback: try by OpName? Or just leave N/A
+      }
+
+      String zeusName = meta?.zeus ?? 'N/A';
+      String plName = meta?.pl ?? 'N/A';
+
+      if (zeusName.isEmpty) zeusName = 'N/A';
+      if (plName.isEmpty) plName = 'N/A';
+
       return MissionSummary(
-        opName: e.key,
+        opName: opName,
         date: val['date'],
         avgFun: val['totalFun'] / safeCount,
         avgTech: val['totalTech'] / safeCount,
@@ -77,8 +87,8 @@ class DataProcessor {
         avgDiff: val['totalDiff'] / safeCount,
         totalFeedback: count,
         comments: List<String>.from(val['comments']),
-        zeus: (val['zeusNames'] as Set<String>).isEmpty ? 'N/A' : (val['zeusNames'] as Set<String>).first,
-        pl: (val['plNames'] as Set<String>).isEmpty ? 'N/A' : (val['plNames'] as Set<String>).first,
+        zeus: zeusName,
+        pl: plName,
       );
     }).toList();
 
@@ -86,7 +96,6 @@ class DataProcessor {
     missionSummaries.sort((a, b) => b.date.compareTo(a.date));
 
     // --- PASS 2: Leaderboard Construction ---
-    // Now valid Zeuses get credit for the Mission's Score, not their own entry.
     final zeusMap = <String, Map<String, dynamic>>{};
     final leaderMap = <String, Map<String, dynamic>>{};
 
@@ -96,11 +105,7 @@ class DataProcessor {
         if (!zeusMap.containsKey(mission.zeus)) {
           zeusMap[mission.zeus] = {'totalScore': 0.0, 'count': 0};
         }
-        // Be careful with 0-feedback missions, but usually we want to count them or not? 
-        // If totalFeedback > 0, the score is valid. If 0, it's 0.0.
         if (mission.totalFeedback > 0) {
-           // We can use overallScore, or just (Fun+Tech)/2 as before, but aggregated
-           // Using overallScore is better as it reflects the "Mission Rating"
            zeusMap[mission.zeus]!['totalScore'] += mission.overallScore;
            zeusMap[mission.zeus]!['count'] += 1;
         }
@@ -112,7 +117,6 @@ class DataProcessor {
           leaderMap[mission.pl] = {'totalScore': 0.0, 'count': 0};
         }
         if (mission.totalFeedback > 0) {
-           // PLs are ranked by Coordination
            leaderMap[mission.pl]!['totalScore'] += mission.avgCoord;
            leaderMap[mission.pl]!['count'] += 1;
         }
@@ -154,3 +158,4 @@ class DataProcessor {
     );
   }
 }
+
