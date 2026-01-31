@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models.dart';
 import '../theme.dart';
+import 'widgets/pxg_divider.dart';
 import 'widgets/radar_chart.dart';
 import 'widgets/glass_card.dart';
 import 'widgets/mesh_background.dart';
@@ -14,8 +15,8 @@ class DashboardScreen extends StatelessWidget {
   final bool enableAnimations;
 
   const DashboardScreen({
-    super.key, 
-    required this.data, 
+    super.key,
+    required this.data,
     required this.onRefresh,
     this.enableAnimations = true,
   });
@@ -29,7 +30,10 @@ class DashboardScreen extends StatelessWidget {
           children: [
             const Text('No intelligence collected.'),
             const SizedBox(height: 16),
-            IconButton(icon: const Icon(Icons.refresh, color: PhoenixTheme.primary), onPressed: onRefresh),
+            IconButton(
+              icon: const Icon(Icons.refresh, color: PhoenixTheme.primary),
+              onPressed: onRefresh,
+            ),
           ],
         ),
       );
@@ -53,110 +57,145 @@ class DashboardScreen extends StatelessWidget {
           Container(
             width: constraints.maxWidth,
             height: constraints.maxHeight,
-            padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 32.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 48.0,
+              vertical: 32.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-              // 1. Top Header (Logo + Title LEFT, Refresh RIGHT)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Branding
-                  Row(
+                // 1. Hero Section: Horizontal Layout (Logo + OpName - Personnel - Rating)
+                Expanded(
+                  flex: 2,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Transform.rotate(
-                        angle: 0.0001, // Micro-rotation to force anti-aliasing
-                        child: Image.asset(
-                          'assets/logo.png',
-                          height: 96,
-                          cacheHeight: 96,
-                          filterQuality: FilterQuality.medium,
-                          isAntiAlias: true,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Text('PXG INTELLIGENCE', style: TextStyle(color: Colors.white, fontSize: 12, letterSpacing: 4, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  
-                  // Actions
-                  IconButton(
-                    icon: const Icon(Icons.refresh, color: PhoenixTheme.primary), // Using Primary Orange color
-                    onPressed: onRefresh,
-                    tooltip: 'Refresh Intelligence',
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-
-              // 2. Hero Section: Horizontal Layout (OpName - Personnel - Rating)
-              Expanded(
-                flex: 3, // Slightly reduced flex to give console more room if needed
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // A. Operation Name (Left)
-                    Expanded(
-                      flex: 4,
-                      child: Container(
-                        padding: const EdgeInsets.only(right: 24),
-                        alignment: Alignment.centerLeft,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                latest.opName.toUpperCase(),
-                                style: GoogleFonts.orbitron(
-                                  fontSize: 84,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  height: 0.85,
-                                  letterSpacing: -2.0,
+                      // A. Logo + Operation Name (Left)
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          padding: const EdgeInsets.only(right: 24),
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            children: [
+                              Transform.rotate(
+                                angle: 0.0001,
+                                child: Image.asset(
+                                  'assets/logo.png',
+                                  height: 120,
+                                  cacheHeight: 120,
+                                  filterQuality: FilterQuality.medium,
+                                  isAntiAlias: true,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                const Icon(FontAwesomeIcons.calendar, color: PhoenixTheme.textSecondary, size: 12),
-                                const SizedBox(width: 8),
-                                Text(latest.date, style: const TextStyle(color: PhoenixTheme.textSecondary, fontSize: 14, fontWeight: FontWeight.bold)),
-                                const SizedBox(width: 24),
-                                const Icon(FontAwesomeIcons.users, color: PhoenixTheme.textSecondary, size: 12),
-                                const SizedBox(width: 8),
-                                Text('${latest.totalFeedback} RESPONSES', style: const TextStyle(color: PhoenixTheme.textSecondary, fontSize: 14, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                          ],
+                              const SizedBox(width: 32),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      alignment: Alignment.centerLeft,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'OPERATION',
+                                            style: GoogleFonts.orbitron(
+                                              fontSize: 32,
+                                              fontWeight: FontWeight.w900,
+                                              color: PhoenixTheme.primary,
+                                              letterSpacing: 4,
+                                            ),
+                                          ),
+                                          Text(
+                                            latest.opName
+                                                .toUpperCase()
+                                                .replaceFirst('OPERATION ', '')
+                                                .trim(),
+                                            style: GoogleFonts.orbitron(
+                                              fontSize: 64,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.white,
+                                              height: 0.9,
+                                              letterSpacing: -1.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          FontAwesomeIcons.calendar,
+                                          color: PhoenixTheme.textSecondary,
+                                          size: 12,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          latest.date,
+                                          style: const TextStyle(
+                                            color: PhoenixTheme.textSecondary,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 24),
+                                        const Icon(
+                                          FontAwesomeIcons.users,
+                                          color: PhoenixTheme.textSecondary,
+                                          size: 12,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '${latest.totalFeedback} RESPONSES',
+                                          style: const TextStyle(
+                                            color: PhoenixTheme.textSecondary,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ).animate().fadeIn().slideX(begin: -0.05),
-                    ),
-                    
-                    // B. Personnel (Center)
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        children: [
-                          Expanded(child: _buildPersonnelCard('ZEUS', latest.zeus, FontAwesomeIcons.bolt, PhoenixTheme.primary)),
-                          const SizedBox(height: 12),
-                          Expanded(child: _buildPersonnelCard('PLATOON LEADER', latest.pl, FontAwesomeIcons.rankingStar, PhoenixTheme.secondary)),
-                        ],
-                      ).animate().fadeIn(delay: 100.ms),
-                    ),
-                    
-                    const SizedBox(width: 24),
 
-                    // C. Rating (Right)
-                    Expanded(
-                      flex: 2,
-                      child: GlassCard(
-                        padding: EdgeInsets.zero,
+                      const PXGVerticalDivider(height: 100),
+
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildPersonnelCard(
+                              'ZEUS',
+                              latest.zeus,
+                              icon: FontAwesomeIcons.bolt,
+                              color: PhoenixTheme.primary,
+                            ),
+                            const SizedBox(height: 4),
+                            _buildPersonnelCard(
+                              'PLATOON LEADER',
+                              latest.pl,
+                              icon: FontAwesomeIcons.star,
+                              color: PhoenixTheme.primary,
+                            ),
+                          ],
+                        ).animate().fadeIn(delay: 100.ms),
+                      ),
+
+                      const PXGVerticalDivider(height: 100),
+
+                      Expanded(
+                        flex: 2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -164,154 +203,228 @@ class DashboardScreen extends StatelessWidget {
                               fit: BoxFit.scaleDown,
                               child: Text(
                                 latest.overallScore.toStringAsFixed(1),
-                                style: const TextStyle(fontSize: 96, fontWeight: FontWeight.w900, color: Colors.white, height: 1),
+                                style: const TextStyle(
+                                  fontSize: 72,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  height: 1,
+                                ),
                               ),
                             ),
-                            const Text('MISSION RATING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: PhoenixTheme.primary, letterSpacing: 2)),
+                            const Text(
+                              'MISSION RATING',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: PhoenixTheme.primary,
+                                letterSpacing: 2,
+                              ),
+                            ),
                           ],
-                        ),
-                      ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.05),
-                    ),
-                  ],
+                        ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.05),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 24),
-              
-              // 3. Console Section (Remains mostly same)
-              Expanded(
-                flex: 6,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Radar Chart
-                    Expanded(
-                      flex: 3,
-                      child: GlassCard(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                             const Text('PERFORMANCE METRICS', style: TextStyle(color: PhoenixTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                             Expanded(
-                               child: PerformanceRadar(
-                                fun: latest.avgFun,
-                                tech: latest.avgTech,
-                                coord: latest.avgCoord,
-                                pace: latest.avgPace,
-                                diff: latest.avgDiff,
-                               ),
-                             ),
-                          ],
-                        ),
-                      ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.05),
-                    ),
-                    const SizedBox(width: 24),
-                    
-                    // Troop Comms
-                    Expanded(
-                      flex: 4,
-                      child: GlassCard(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('TROOP TRANSMISSIONS', style: TextStyle(color: PhoenixTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                            const SizedBox(height: 16),
-                            Expanded(
-                              child: ListView.separated(
-                                itemCount: latest.comments.length,
-                                separatorBuilder: (context, i) => const SizedBox(height: 12),
-                                itemBuilder: (context, i) => _buildCommentItem(latest.comments[i]),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.05),
-                    ),
-                    const SizedBox(width: 24),
+                const SizedBox(height: 24),
 
-                    // History Column (Split vertically)
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        children: [
-                          // Top Zeuses
-                          Expanded(
-                            child: GlassCard(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('TOP ZEUS (OVERALL)', style: TextStyle(color: PhoenixTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                                  const SizedBox(height: 12),
-                                  Expanded(
-                                    child: ListView.separated(
-                                      itemCount: data.topZeuses.take(3).length,
-                                      separatorBuilder: (context, i) => const Divider(color: Colors.white10, height: 8),
-                                      itemBuilder: (context, i) => _buildLeaderboardItem(data.topZeuses[i], i + 1),
-                                    ),
-                                  ),
-                                ],
+                // 3. Console Section (Remains mostly same)
+                Expanded(
+                  flex: 6,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Radar Chart
+                      Expanded(
+                        flex: 3,
+                        child: GlassCard(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'PERFORMANCE METRICS',
+                                style: TextStyle(
+                                  color: PhoenixTheme.primary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          // Top PLs
-                          Expanded(
-                            child: GlassCard(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('TOP PLs (COORD)', style: TextStyle(color: PhoenixTheme.accent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                                  const SizedBox(height: 12),
-                                  Expanded(
-                                    child: ListView.separated(
-                                      itemCount: data.topLeaders.take(3).length,
-                                      separatorBuilder: (context, i) => const Divider(color: Colors.white10, height: 8),
-                                      itemBuilder: (context, i) => _buildLeaderboardItem(data.topLeaders[i], i + 1, isPl: true),
-                                    ),
-                                  ),
-                                ],
+                              Expanded(
+                                child: PerformanceRadar(
+                                  fun: latest.avgFun,
+                                  tech: latest.avgTech,
+                                  coord: latest.avgCoord,
+                                  pace: latest.avgPace,
+                                  diff: latest.avgDiff,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.05),
-                    ),
-                  ],
+                        ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.05),
+                      ),
+                      const SizedBox(width: 24),
+
+                      // Troop Comms
+                      Expanded(
+                        flex: 4,
+                        child: GlassCard(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'TROOP TRANSMISSIONS',
+                                style: TextStyle(
+                                  color: PhoenixTheme.primary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: latest.comments.length,
+                                  separatorBuilder: (context, i) =>
+                                      const SizedBox(height: 12),
+                                  itemBuilder: (context, i) =>
+                                      _buildCommentItem(latest.comments[i]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.05),
+                      ),
+                      const SizedBox(width: 24),
+
+                      // Leaderboard Component
+                      Expanded(
+                        flex: 3,
+                        child: GlassCard(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'LEADERBOARD',
+                                style: TextStyle(
+                                  color: PhoenixTheme.primary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: ListView(
+                                  children: [
+                                    const Text(
+                                      'TOP ZEUS',
+                                      style: TextStyle(
+                                        color: PhoenixTheme.primary,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...data.topZeuses
+                                        .take(3)
+                                        .map(
+                                          (e) => _buildLeaderboardItem(
+                                            e,
+                                            data.topZeuses.indexOf(e) + 1,
+                                          ),
+                                        ),
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      'TOP PLs',
+                                      style: TextStyle(
+                                        color: PhoenixTheme.primary,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ...data.topLeaders
+                                        .take(2)
+                                        .map(
+                                          (e) => _buildLeaderboardItem(
+                                            e,
+                                            data.topLeaders.indexOf(e) + 1,
+                                          ),
+                                        ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-
-  Widget _buildPersonnelCard(String title, String name, IconData icon, Color color) {
-    return GlassCard(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+  Widget _buildPersonnelCard(
+    String title,
+    String name, {
+    IconData? icon,
+    required Color color,
+    String? imagePath,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: color.withOpacity(0.2), shape: BoxShape.circle),
-            child: Icon(icon, color: color, size: 24),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: imagePath != null
+                ? Image.asset(
+                    imagePath,
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.contain,
+                  )
+                : Icon(icon, color: color, size: 20),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(title, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
                 FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text(name.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+                  child: Text(
+                    name.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -326,39 +439,65 @@ class DashboardScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Text(
         '"$comment"',
-        style: const TextStyle(color: Colors.white, fontSize: 14, height: 1.4, fontStyle: FontStyle.italic),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 14,
+          height: 1.4,
+          fontStyle: FontStyle.italic,
+        ),
       ),
     );
   }
 
-  Widget _buildLeaderboardItem(LeaderboardEntry entry, int rank, {bool isPl = false}) {
+  Widget _buildLeaderboardItem(LeaderboardEntry entry, int rank) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Text('#$rank', style: const TextStyle(color: PhoenixTheme.textSecondary, fontWeight: FontWeight.bold, fontSize: 14)),
+          Text(
+            '#$rank',
+            style: const TextStyle(
+              color: PhoenixTheme.textSecondary,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(entry.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14), overflow: TextOverflow.ellipsis),
-                Text('${entry.count} MISSIONS', 
-                  style: const TextStyle(color: PhoenixTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)),
+                Text(
+                  entry.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  '${entry.count} MISSIONS',
+                  style: const TextStyle(
+                    color: PhoenixTheme.textSecondary,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
           Text(
-            entry.avgScore.toStringAsFixed(1), 
-            style: TextStyle(
-              color: isPl ? PhoenixTheme.accent : PhoenixTheme.primary, 
-              fontWeight: FontWeight.w900, 
-              fontSize: 18
+            entry.avgScore.toStringAsFixed(1),
+            style: const TextStyle(
+              color: PhoenixTheme.primary,
+              fontWeight: FontWeight.w900,
+              fontSize: 18,
             ),
           ),
         ],

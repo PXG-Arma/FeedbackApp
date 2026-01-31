@@ -15,7 +15,7 @@ class GlassCard extends StatelessWidget {
     this.blur = 15.0,
     this.opacity = 0.05,
     this.padding,
-    this.borderRadius = 24.0,
+    this.borderRadius = 4.0,
   });
 
   @override
@@ -27,19 +27,19 @@ class GlassCard extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: PhoenixTheme.cardBg, // Using the more opaque cardBg from theme
+            color:
+                PhoenixTheme.cardBg, // Using the more opaque cardBg from theme
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: Colors.white.withOpacity(0.12), // Slightly brighter border for definition
+              color: Colors.white.withOpacity(
+                0.12,
+              ), // Slightly brighter border for definition
               width: 0.5,
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.05),
-                Colors.transparent,
-              ],
+              colors: [Colors.white.withOpacity(0.05), Colors.transparent],
             ),
           ),
           child: child,
@@ -48,5 +48,3 @@ class GlassCard extends StatelessWidget {
     );
   }
 }
-
-
