@@ -398,7 +398,7 @@ class DashboardScreen extends StatelessWidget {
                     height: 24,
                     fit: BoxFit.contain,
                   )
-                : Icon(icon, color: color, size: 20),
+                : Icon(icon, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
