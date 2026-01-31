@@ -178,14 +178,14 @@ class DashboardScreen extends StatelessWidget {
                             _buildPersonnelCard(
                               'ZEUS',
                               latest.zeus,
-                              icon: FontAwesomeIcons.bolt,
+                              icon: Icons.bolt,
                               color: PhoenixTheme.primary,
                             ),
                             const SizedBox(height: 4),
                             _buildPersonnelCard(
                               'PLATOON LEADER',
                               latest.pl,
-                              icon: FontAwesomeIcons.star,
+                              icon: Icons.star,
                               color: PhoenixTheme.primary,
                             ),
                           ],
