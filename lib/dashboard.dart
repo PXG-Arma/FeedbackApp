@@ -52,10 +52,9 @@ class DashboardScreen extends StatelessWidget {
     final latest = data.missionSummaries.first;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let mesh background show
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
-          const MeshBackground(),
           Container(
             width: constraints.maxWidth,
             height: constraints.maxHeight,
@@ -212,7 +211,7 @@ class DashboardScreen extends StatelessWidget {
                               child: Text(
                                 latest.overallScore.toStringAsFixed(1),
                                 style: const TextStyle(
-                                  fontSize: 72,
+                                  fontSize: 108,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
                                   height: 1,
@@ -469,7 +468,7 @@ class DashboardScreen extends StatelessWidget {
                     name.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 36,
                       fontWeight: FontWeight.w900,
                     ),
                   ),

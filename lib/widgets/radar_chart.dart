@@ -88,9 +88,9 @@ class PerformanceRadar extends StatelessWidget {
                     borderWidth: 2,
                   ),
                 ],
-                radarBackgroundColor: Colors.transparent,
+                radarBackgroundColor: Colors.black,
                 borderData: FlBorderData(show: false),
-                radarBorderData: BorderSide(color: PhoenixTheme.border, width: 1),
+                radarBorderData: const BorderSide(color: Colors.white24, width: 1),
                 titlePositionPercentageOffset: 0.2, // Push text out a bit
                 titleTextStyle: TextStyle(color: PhoenixTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold),
                 getTitle: (index, angle) {
@@ -105,7 +105,7 @@ class PerformanceRadar extends StatelessWidget {
                 },
                 tickCount: 5,
                 ticksTextStyle: const TextStyle(color: Colors.transparent),
-                gridBorderData: BorderSide(color: PhoenixTheme.border, width: 1),
+                gridBorderData: const BorderSide(color: Colors.white12, width: 1),
               ),
             ),
             

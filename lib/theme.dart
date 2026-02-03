@@ -8,7 +8,7 @@ class PhoenixTheme {
   ); // Emerald Green (Replaces Burning Red)
   static const Color tertiary = Color(0xFF78350F); // Coffee / Cafe Brown
   static const Color accent = Color(0xFFFFD600); // Phoenix Gold
-  static const Color background = Color(0xFF070B14); // Deep Navy Base
+  static const Color background = Color(0xFF000000); // Pure Black
   static const Color backgroundLight = Color(
     0xFF0F172A,
   ); // Slightly lighter navy
