@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class FeedbackEntry {
   final String opName;
   final String date;
@@ -63,11 +65,19 @@ class MissionMetadata {
   final String opId;
   final String zeus;
   final String pl;
+  final String? zeusAvatar;
+  final String? plAvatar;
+  final String? zeusId;
+  final String? plId;
 
   MissionMetadata({
     required this.opId,
     required this.zeus,
     required this.pl,
+    this.zeusAvatar,
+    this.plAvatar,
+    this.zeusId,
+    this.plId,
   });
 
   factory MissionMetadata.fromJson(Map<String, dynamic> json) {
@@ -75,7 +85,18 @@ class MissionMetadata {
       opId: json['OPID']?.toString() ?? '',
       zeus: json['concatenated_Zeus']?.toString() ?? '',
       pl: json['concatenated_PL']?.toString() ?? '',
+      zeusAvatar: _extractUrl(json['zeusAvatar']),
+      plAvatar: _extractUrl(json['plAvatar']),
+      zeusId: json['concatenated_ZeusID']?.toString(),
+      plId: json['concatenated_PLID']?.toString(),
     );
+  }
+
+  static String? _extractUrl(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    if (value is Map) return value['url']?.toString() ?? value['URL']?.toString();
+    return null;
   }
 }
 
@@ -92,6 +113,12 @@ class MissionSummary {
   final List<String> comments;
   final String zeus;
   final String pl;
+  final String? zeusAvatar;
+  final String? plAvatar;
+  final String? zeusId;
+  final String? plId;
+  Uint8List? zeusAvatarBytes;
+  Uint8List? plAvatarBytes;
 
   MissionSummary({
     required this.opName,
@@ -105,6 +132,12 @@ class MissionSummary {
     required this.comments,
     required this.zeus,
     required this.pl,
+    this.zeusAvatar,
+    this.plAvatar,
+    this.zeusId,
+    this.plId,
+    this.zeusAvatarBytes,
+    this.plAvatarBytes,
   });
 
   double get overallScore {
@@ -123,11 +156,17 @@ class LeaderboardEntry {
   final String name;
   final double avgScore;
   final int count;
+  final String? avatarUrl;
+  final String? userId;
+  Uint8List? avatarBytes;
 
   LeaderboardEntry({
     required this.name,
     required this.avgScore,
     required this.count,
+    this.avatarUrl,
+    this.userId,
+    this.avatarBytes,
   });
 }
 

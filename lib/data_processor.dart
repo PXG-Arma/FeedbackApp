@@ -49,6 +49,17 @@ class DataProcessor {
         if (entry.comments.trim().isNotEmpty) {
           m['comments'].add(entry.comments);
         }
+
+        // Capture Role-based Candidates (Fallback logic)
+        final role = entry.role.toLowerCase();
+        if (role.contains('zeus')) {
+          m['zeusCandidate'] = entry.player;
+        } else if (role.contains('platoon') || role == 'pl') {
+          m['plCandidate'] = entry.player;
+        } else if (role.contains('squad lead') || role.contains('sl')) {
+          // Track Squad Lead as a potential fallback for PL
+          m['slCandidate'] = entry.player;
+        }
       }
     }
 
@@ -71,8 +82,21 @@ class DataProcessor {
         // Fallback: try by OpName? Or just leave N/A
       }
 
-      String zeusName = meta?.zeus ?? 'N/A';
-      String plName = meta?.pl ?? 'N/A';
+      String zeusName = meta?.zeus ?? '';
+      String plName = meta?.pl ?? '';
+      
+      // Fallback to candidates found in feedback if metadata is missing/empty
+      if ((zeusName.isEmpty || zeusName == 'N/A') && val.containsKey('zeusCandidate')) {
+        zeusName = val['zeusCandidate'];
+      }
+      
+      if (plName.isEmpty || plName == 'N/A') {
+        if (val.containsKey('plCandidate')) {
+          plName = val['plCandidate'];
+        } else if (val.containsKey('slCandidate')) {
+          plName = val['slCandidate'];
+        }
+      }
 
       if (zeusName.isEmpty) zeusName = 'N/A';
       if (plName.isEmpty) plName = 'N/A';
@@ -89,11 +113,25 @@ class DataProcessor {
         comments: List<String>.from(val['comments']),
         zeus: zeusName,
         pl: plName,
+        zeusAvatar: meta?.zeusAvatar,
+        plAvatar: meta?.plAvatar,
+        zeusId: meta?.zeusId,
+        plId: meta?.plId,
       );
     }).toList();
 
     // Sort: Latest date first
     missionSummaries.sort((a, b) => b.date.compareTo(a.date));
+
+    // Debug: Print the avatar URLs for the latest mission
+    if (missionSummaries.isNotEmpty) {
+      final latest = missionSummaries.first;
+      print('--- DEBUG AVATARS (AFTER SORT) ---');
+      print('Mission: ${latest.opName} (${latest.date})');
+      print('Zeus: ${latest.zeus} | Avatar: ${latest.zeusAvatar}');
+      print('PL: ${latest.pl} | Avatar: ${latest.plAvatar}');
+      print('----------------------');
+    }
 
     // --- PASS 2: Leaderboard Construction ---
     final zeusMap = <String, Map<String, dynamic>>{};
@@ -103,22 +141,52 @@ class DataProcessor {
       // 1. Zeus Leaderboard
       if (mission.zeus != 'N/A') {
         if (!zeusMap.containsKey(mission.zeus)) {
-          zeusMap[mission.zeus] = {'totalScore': 0.0, 'count': 0};
+          zeusMap[mission.zeus] = {
+            'totalScore': 0.0,
+            'count': 0,
+            'avatar': mission.zeusAvatar,
+            'id': mission.zeusId,
+            'bytes': mission.zeusAvatarBytes,
+          };
         }
         if (mission.totalFeedback > 0) {
-           zeusMap[mission.zeus]!['totalScore'] += mission.overallScore;
-           zeusMap[mission.zeus]!['count'] += 1;
+          zeusMap[mission.zeus]!['totalScore'] += mission.overallScore;
+          zeusMap[mission.zeus]!['count'] += 1;
+          if (mission.zeusAvatar != null) {
+            zeusMap[mission.zeus]!['avatar'] = mission.zeusAvatar;
+          }
+          if (mission.zeusId != null) {
+            zeusMap[mission.zeus]!['id'] = mission.zeusId;
+          }
+          if (mission.zeusAvatarBytes != null) {
+            zeusMap[mission.zeus]!['bytes'] = mission.zeusAvatarBytes;
+          }
         }
       }
 
       // 2. PL Leaderboard
-       if (mission.pl != 'N/A') {
+      if (mission.pl != 'N/A') {
         if (!leaderMap.containsKey(mission.pl)) {
-          leaderMap[mission.pl] = {'totalScore': 0.0, 'count': 0};
+          leaderMap[mission.pl] = {
+            'totalScore': 0.0,
+            'count': 0,
+            'avatar': mission.plAvatar,
+            'id': mission.plId,
+            'bytes': mission.plAvatarBytes,
+          };
         }
         if (mission.totalFeedback > 0) {
-           leaderMap[mission.pl]!['totalScore'] += mission.avgCoord;
-           leaderMap[mission.pl]!['count'] += 1;
+          leaderMap[mission.pl]!['totalScore'] += mission.avgCoord;
+          leaderMap[mission.pl]!['count'] += 1;
+          if (mission.plAvatar != null) {
+            leaderMap[mission.pl]!['avatar'] = mission.plAvatar;
+          }
+          if (mission.plId != null) {
+            leaderMap[mission.pl]!['id'] = mission.plId;
+          }
+          if (mission.plAvatarBytes != null) {
+            leaderMap[mission.pl]!['bytes'] = mission.plAvatarBytes;
+          }
         }
       }
     }
@@ -129,6 +197,9 @@ class DataProcessor {
         name: e.key,
         avgScore: val['totalScore'] / val['count'],
         count: val['count'],
+        avatarUrl: val['avatar'],
+        userId: val['id'],
+        avatarBytes: val['bytes'],
       );
     }).toList()..sort((a, b) => b.avgScore.compareTo(a.avgScore));
 
@@ -138,6 +209,9 @@ class DataProcessor {
         name: e.key,
         avgScore: val['totalScore'] / val['count'],
         count: val['count'],
+        avatarUrl: val['avatar'],
+        userId: val['id'],
+        avatarBytes: val['bytes'],
       );
     }).toList()..sort((a, b) => b.avgScore.compareTo(a.avgScore));
 
