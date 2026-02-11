@@ -1,8 +1,10 @@
 import 'models.dart';
 
-
 class DataProcessor {
-  static DashboardData process(List<FeedbackEntry> data, List<MissionMetadata> metadata) {
+  static DashboardData process(
+    List<FeedbackEntry> data,
+    List<MissionMetadata> metadata,
+  ) {
     if (data.isEmpty) {
       return DashboardData(
         missionSummaries: [],
@@ -14,7 +16,7 @@ class DataProcessor {
     }
 
     final missionMap = <String, Map<String, dynamic>>{};
-    
+
     // --- PASS 1: Mission Aggregation ---
     for (var entry in data) {
       if (!missionMap.containsKey(entry.opName)) {
@@ -31,9 +33,9 @@ class DataProcessor {
           'opId': entry.opid, // Capture OpID from feedback if possible to link
         };
       }
-      
+
       var m = missionMap[entry.opName]!;
-      
+
       // Metadata Detection: If Fun & Tech are 0, it's a metadata row (or invalid feedback)
       // Do NOT add to averages
       bool isMetadata = (entry.fun == 0 && entry.tech == 0);
@@ -45,7 +47,7 @@ class DataProcessor {
         m['totalPace'] += entry.pace;
         m['totalDiff'] += entry.diff;
         m['count'] += 1;
-        
+
         if (entry.comments.trim().isNotEmpty) {
           m['comments'].add(entry.comments);
         }
@@ -68,9 +70,9 @@ class DataProcessor {
       final val = e.value;
       final opName = e.key;
       final opId = val['opId'] as String;
-      
+
       final count = val['count'] as int;
-      final safeCount = count == 0 ? 1 : count; 
+      final safeCount = count == 0 ? 1 : count;
 
       // Find metadata for this mission
       // Try linking by OpID first, fallback to Name could be tricky if names vary slightly
@@ -84,12 +86,13 @@ class DataProcessor {
 
       String zeusName = meta?.zeus ?? '';
       String plName = meta?.pl ?? '';
-      
+
       // Fallback to candidates found in feedback if metadata is missing/empty
-      if ((zeusName.isEmpty || zeusName == 'N/A') && val.containsKey('zeusCandidate')) {
+      if ((zeusName.isEmpty || zeusName == 'N/A') &&
+          val.containsKey('zeusCandidate')) {
         zeusName = val['zeusCandidate'];
       }
-      
+
       if (plName.isEmpty || plName == 'N/A') {
         if (val.containsKey('plCandidate')) {
           plName = val['plCandidate'];
@@ -232,4 +235,3 @@ class DataProcessor {
     );
   }
 }
-

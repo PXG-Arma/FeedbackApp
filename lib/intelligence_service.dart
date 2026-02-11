@@ -6,8 +6,10 @@ import 'data_processor.dart';
 
 class IntelligenceService {
   // To be replaced by the actual n8n webhook URL
-  static const String webhookUrl = 'https://www.pxghub.com/webhook/feedbackinfo';
-  static const String avatarWebhookUrl = 'https://www.pxghub.com/webhook/get-avatar';
+  static const String webhookUrl =
+      'https://www.pxghub.com/webhook/feedbackinfo';
+  static const String avatarWebhookUrl =
+      'https://www.pxghub.com/webhook/get-avatar';
 
   static Future<DashboardData> fetchData() async {
     try {
@@ -18,7 +20,7 @@ class IntelligenceService {
       final response = await http.get(Uri.parse(webhookUrl));
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
-        
+
         List<dynamic> feedbackList = [];
         List<dynamic> metadataList = [];
 
@@ -43,8 +45,12 @@ class IntelligenceService {
           }
         }
 
-        final entries = feedbackList.map((j) => FeedbackEntry.fromJson(j)).toList();
-        final metadata = metadataList.map((j) => MissionMetadata.fromJson(j)).toList();
+        final entries = feedbackList
+            .map((j) => FeedbackEntry.fromJson(j))
+            .toList();
+        final metadata = metadataList
+            .map((j) => MissionMetadata.fromJson(j))
+            .toList();
 
         final dashboardData = DataProcessor.process(entries, metadata);
 
@@ -52,18 +58,25 @@ class IntelligenceService {
         final Map<String, Uint8List?> avatarCache = {};
 
         // Helper to fetch and cache avatars for MissionSummary
-        Future<void> fetchAndAssignMission(MissionSummary mission, bool forZeus) async {
+        Future<void> fetchAndAssignMission(
+          MissionSummary mission,
+          bool forZeus,
+        ) async {
           final String? id = forZeus ? mission.zeusId : mission.plId;
           if (id != null && id.isNotEmpty && id != 'N/A') {
             if (avatarCache.containsKey(id)) {
-              if (forZeus) mission.zeusAvatarBytes = avatarCache[id];
-              else mission.plAvatarBytes = avatarCache[id];
+              if (forZeus)
+                mission.zeusAvatarBytes = avatarCache[id];
+              else
+                mission.plAvatarBytes = avatarCache[id];
             } else {
               try {
                 final bytes = await fetchAvatar(id);
                 avatarCache[id] = bytes;
-                if (forZeus) mission.zeusAvatarBytes = bytes;
-                else mission.plAvatarBytes = bytes;
+                if (forZeus)
+                  mission.zeusAvatarBytes = bytes;
+                else
+                  mission.plAvatarBytes = bytes;
               } catch (e) {
                 print('Error fetching avatar for $id: $e');
               }
@@ -121,7 +134,7 @@ class IntelligenceService {
         body: json.encode({'id': id}),
         headers: {'Content-Type': 'application/json'},
       );
-      
+
       if (response.statusCode == 200) {
         return response.bodyBytes;
       }
@@ -200,7 +213,7 @@ class IntelligenceService {
         pace: 2,
         diff: 2,
       ),
-       FeedbackEntry(
+      FeedbackEntry(
         opName: 'Midnight Strike',
         date: '2025-01-15',
         time: '20:10',

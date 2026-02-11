@@ -52,7 +52,9 @@ class _DashboardLoaderState extends State<DashboardLoader> {
             ),
           );
         } else if (snapshot.hasError) {
-          return Scaffold(body: Center(child: Text('Error: ${snapshot.error}')));
+          return Scaffold(
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
         } else if (!snapshot.hasData) {
           return const Scaffold(body: Center(child: Text('No data found.')));
         }

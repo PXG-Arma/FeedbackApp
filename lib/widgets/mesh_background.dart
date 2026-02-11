@@ -13,9 +13,9 @@ class MeshBackground extends StatelessWidget {
         final h = constraints.maxHeight;
 
         // Finalized 3-color Flecktarn Palette
-        const fleckGreen = Color(0xFF2D361E);  // Moss Green
-        const fleckBrown = Color(0xFF4A3728);  // Earth Brown
-        const fleckTan = Color(0xFF8B7355);    // Sandy Tan
+        const fleckGreen = Color(0xFF2D361E); // Moss Green
+        const fleckBrown = Color(0xFF4A3728); // Earth Brown
+        const fleckTan = Color(0xFF8B7355); // Sandy Tan
 
         // Simplified pattern (20 patches total)
         final patches = [
@@ -27,7 +27,7 @@ class MeshBackground extends StatelessWidget {
           _PatchData(fleckGreen, const Offset(0.6, 0.45), 0.35, 0.6),
           _PatchData(fleckGreen, const Offset(0.9, 0.1), 0.3, 0.5),
           _PatchData(fleckGreen, const Offset(0.4, 0.9), 0.35, 0.5),
-          
+
           // Earth Brown
           _PatchData(fleckBrown, const Offset(0.3, 0.2), 0.35, 0.6),
           _PatchData(fleckBrown, const Offset(0.7, 0.35), 0.3, 0.5),
@@ -35,7 +35,7 @@ class MeshBackground extends StatelessWidget {
           _PatchData(fleckBrown, const Offset(0.85, 0.9), 0.3, 0.5),
           _PatchData(fleckBrown, const Offset(0.5, 0.7), 0.25, 0.6),
           _PatchData(fleckBrown, const Offset(0.4, 0.05), 0.3, 0.5),
-          
+
           // Sandy Tan Highlights
           _PatchData(fleckTan, const Offset(0.15, 0.4), 0.15, 0.7),
           _PatchData(fleckTan, const Offset(0.65, 0.15), 0.18, 0.6),
@@ -52,12 +52,14 @@ class MeshBackground extends StatelessWidget {
             Container(color: const Color(0xFF1B2014)),
 
             // Camouflage Patches
-            ...patches.map((p) => _PositionedBlob(
-              color: p.color.withOpacity(p.opacity),
-              size: w * p.sizeFactor,
-              baseOffset: p.offset,
-              screenSize: Size(w, h),
-            )),
+            ...patches.map(
+              (p) => _PositionedBlob(
+                color: p.color.withOpacity(p.opacity),
+                size: w * p.sizeFactor,
+                baseOffset: p.offset,
+                screenSize: Size(w, h),
+              ),
+            ),
 
             // High Diffusion Blur for a premium look
             Positioned.fill(
@@ -108,9 +110,7 @@ class _PositionedBlob extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color, color.withOpacity(0)],
-          ),
+          gradient: RadialGradient(colors: [color, color.withOpacity(0)]),
         ),
       ),
     );

@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../models.dart';
 import '../theme.dart';
 import 'widgets/pxg_divider.dart';
-import 'widgets/radar_chart.dart';
+import 'widgets/metrics_displays.dart';
 import 'widgets/glass_card.dart';
 import 'widgets/mesh_background.dart';
 
@@ -242,7 +242,7 @@ class DashboardScreen extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Radar Chart
+                      // Metrics
                       Expanded(
                         flex: 3,
                         child: GlassCard(
@@ -259,8 +259,9 @@ class DashboardScreen extends StatelessWidget {
                                   letterSpacing: 2,
                                 ),
                               ),
+                              const SizedBox(height: 16),
                               Expanded(
-                                child: PerformanceRadar(
+                                child: MissionMetrics(
                                   fun: latest.avgFun,
                                   tech: latest.avgTech,
                                   coord: latest.avgCoord,
@@ -311,7 +312,7 @@ class DashboardScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: GlassCard(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -324,9 +325,10 @@ class DashboardScreen extends StatelessWidget {
                                   letterSpacing: 2,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 4),
                               Expanded(
-                                child: ListView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const Text(
                                       'TOP ZEUS',
@@ -336,7 +338,7 @@ class DashboardScreen extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 6),
                                     ...data.topZeuses
                                         .take(5)
                                         .map(
@@ -348,7 +350,7 @@ class DashboardScreen extends StatelessWidget {
                                             avatarBytes: e.avatarBytes,
                                           ),
                                         ),
-                                    const SizedBox(height: 24),
+                                    const SizedBox(height: 8),
                                     const Text(
                                       'TOP PLs',
                                       style: TextStyle(
@@ -357,7 +359,7 @@ class DashboardScreen extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 6),
                                     ...data.topLeaders
                                         .take(5)
                                         .map(
@@ -369,7 +371,7 @@ class DashboardScreen extends StatelessWidget {
                                             avatarBytes: e.avatarBytes,
                                           ),
                                         ),
-                                    const SizedBox(height: 24),
+                                    const SizedBox(height: 8),
                                     const Text(
                                       'TOP OPERATIONS',
                                       style: TextStyle(
@@ -378,7 +380,7 @@ class DashboardScreen extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 6),
                                     ...data.topOps.take(5).map(
                                       (e) => _buildLeaderboardItem(
                                         e.opName,
@@ -504,25 +506,25 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildLeaderboardItem(String name, double score, int rank,
       {required String subtitle, Uint8List? avatarBytes, bool showAvatar = true}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
         children: [
           SizedBox(
-            width: 32,
+            width: 24,
             child: Text(
               '#$rank',
               style: const TextStyle(
                 color: PhoenixTheme.textSecondary,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 11,
               ),
             ),
           ),
           if (showAvatar) ...[
             const SizedBox(width: 8),
             Container(
-              width: 32,
-              height: 32,
+              width: 24,
+              height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -539,7 +541,7 @@ class DashboardScreen extends StatelessWidget {
                       )
                     : const Icon(
                         FontAwesomeIcons.solidUser,
-                        size: 14,
+                        size: 10,
                         color: PhoenixTheme.textSecondary,
                       ),
               ),
@@ -556,7 +558,7 @@ class DashboardScreen extends StatelessWidget {
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -564,7 +566,7 @@ class DashboardScreen extends StatelessWidget {
                   subtitle.toUpperCase(),
                   style: const TextStyle(
                     color: PhoenixTheme.textSecondary,
-                    fontSize: 10,
+                    fontSize: 8,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -576,7 +578,7 @@ class DashboardScreen extends StatelessWidget {
             style: const TextStyle(
               color: PhoenixTheme.primary,
               fontWeight: FontWeight.w900,
-              fontSize: 18,
+              fontSize: 14,
             ),
           ),
         ],

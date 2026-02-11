@@ -31,7 +31,6 @@ class FeedbackEntry {
     this.diff = 3.0,
   });
 
-
   factory FeedbackEntry.fromJson(Map<String, dynamic> json) {
     double parseDouble(dynamic value, double defaultValue) {
       if (value == null) return defaultValue;
@@ -54,9 +53,18 @@ class FeedbackEntry {
       fun: parseDouble(json['Fun (1-5)'], 0.0),
       tech: parseDouble(json['Tech (1-5)'], 0.0),
       comments: json['Comments']?.toString() ?? '',
-      coord: parseDouble(json['Coordination (1-5)'] ?? json['Coordination'] ?? json['Coord'], 3.0),
+      coord: parseDouble(
+        json['Coordination (1-5)'] ?? json['Coordination'] ?? json['Coord'],
+        3.0,
+      ),
       pace: parseDouble(json['Pace (1-5)'] ?? json['Pace'], 3.0),
-      diff: parseDouble(json['Difficulty (1-5)'] ?? json['Difficulty'] ?? json['Dificulty'] ?? json['Diff'], 3.0),
+      diff: parseDouble(
+        json['Difficulty (1-5)'] ??
+            json['Difficulty'] ??
+            json['Dificulty'] ??
+            json['Diff'],
+        3.0,
+      ),
     );
   }
 }
@@ -95,11 +103,11 @@ class MissionMetadata {
   static String? _extractUrl(dynamic value) {
     if (value == null) return null;
     if (value is String) return value;
-    if (value is Map) return value['url']?.toString() ?? value['URL']?.toString();
+    if (value is Map)
+      return value['url']?.toString() ?? value['URL']?.toString();
     return null;
   }
 }
-
 
 class MissionSummary {
   final String opName;
@@ -148,7 +156,12 @@ class MissionSummary {
       return 5.0 - (2.0 * (val - 3.0).abs());
     }
 
-    return (avgFun + avgTech + avgCoord + normalize(avgPace) + normalize(avgDiff)) / 5.0;
+    return (avgFun +
+            avgTech +
+            avgCoord +
+            normalize(avgPace) +
+            normalize(avgDiff)) /
+        5.0;
   }
 }
 
