@@ -19,8 +19,9 @@ class DataProcessor {
 
     // --- PASS 1: Mission Aggregation ---
     for (var entry in data) {
-      if (!missionMap.containsKey(entry.opName)) {
-        missionMap[entry.opName] = {
+      final key = entry.opid;
+      if (!missionMap.containsKey(key)) {
+        missionMap[key] = {
           'totalFun': 0.0,
           'totalTech': 0.0,
           'totalCoord': 0.0,
@@ -29,12 +30,12 @@ class DataProcessor {
           'count': 0,
           'date': entry.date,
           'comments': <String>[],
-          // We will fill these later from metadata if available
-          'opId': entry.opid, // Capture OpID from feedback if possible to link
+          'opName': entry.opName,
+          'opId': entry.opid,
         };
       }
 
-      var m = missionMap[entry.opName]!;
+      var m = missionMap[key]!;
 
       // Metadata Detection: If Fun & Tech are 0, it's a metadata row (or invalid feedback)
       // Do NOT add to averages
@@ -68,22 +69,21 @@ class DataProcessor {
     // Create Mission Summaries
     final missionSummaries = missionMap.entries.map((e) {
       final val = e.value;
-      final opName = e.key;
-      final opId = val['opId'] as String;
+      final opId = e.key;
+      final rawOpName = val['opName'] as String;
 
       final count = val['count'] as int;
       final safeCount = count == 0 ? 1 : count;
 
       // Find metadata for this mission
-      // Try linking by OpID first, fallback to Name could be tricky if names vary slightly
-      // But assuming OpID is consistent in both lists.
       MissionMetadata? meta;
       try {
         meta = metadata.firstWhere((m) => m.opId == opId);
       } catch (_) {
-        // Fallback: try by OpName? Or just leave N/A
+        // No metadata found for this OPID
       }
 
+      final opName = meta?.missionName ?? rawOpName;
       String zeusName = meta?.zeus ?? '';
       String plName = meta?.pl ?? '';
 
@@ -126,15 +126,6 @@ class DataProcessor {
     // Sort: Latest date first
     missionSummaries.sort((a, b) => b.date.compareTo(a.date));
 
-    // Debug: Print the avatar URLs for the latest mission
-    if (missionSummaries.isNotEmpty) {
-      final latest = missionSummaries.first;
-      print('--- DEBUG AVATARS (AFTER SORT) ---');
-      print('Mission: ${latest.opName} (${latest.date})');
-      print('Zeus: ${latest.zeus} | Avatar: ${latest.zeusAvatar}');
-      print('PL: ${latest.pl} | Avatar: ${latest.plAvatar}');
-      print('----------------------');
-    }
 
     // --- PASS 2: Leaderboard Construction ---
     final zeusMap = <String, Map<String, dynamic>>{};
@@ -149,7 +140,6 @@ class DataProcessor {
             'count': 0,
             'avatar': mission.zeusAvatar,
             'id': mission.zeusId,
-            'bytes': mission.zeusAvatarBytes,
           };
         }
         if (mission.totalFeedback > 0) {
@@ -160,9 +150,6 @@ class DataProcessor {
           }
           if (mission.zeusId != null) {
             zeusMap[mission.zeus]!['id'] = mission.zeusId;
-          }
-          if (mission.zeusAvatarBytes != null) {
-            zeusMap[mission.zeus]!['bytes'] = mission.zeusAvatarBytes;
           }
         }
       }
@@ -175,7 +162,6 @@ class DataProcessor {
             'count': 0,
             'avatar': mission.plAvatar,
             'id': mission.plId,
-            'bytes': mission.plAvatarBytes,
           };
         }
         if (mission.totalFeedback > 0) {
@@ -186,9 +172,6 @@ class DataProcessor {
           }
           if (mission.plId != null) {
             leaderMap[mission.pl]!['id'] = mission.plId;
-          }
-          if (mission.plAvatarBytes != null) {
-            leaderMap[mission.pl]!['bytes'] = mission.plAvatarBytes;
           }
         }
       }
@@ -202,7 +185,6 @@ class DataProcessor {
         count: val['count'],
         avatarUrl: val['avatar'],
         userId: val['id'],
-        avatarBytes: val['bytes'],
       );
     }).toList()..sort((a, b) => b.avgScore.compareTo(a.avgScore));
 
@@ -214,7 +196,6 @@ class DataProcessor {
         count: val['count'],
         avatarUrl: val['avatar'],
         userId: val['id'],
-        avatarBytes: val['bytes'],
       );
     }).toList()..sort((a, b) => b.avgScore.compareTo(a.avgScore));
 

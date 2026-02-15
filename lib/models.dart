@@ -71,6 +71,7 @@ class FeedbackEntry {
 
 class MissionMetadata {
   final String opId;
+  final String missionName;
   final String zeus;
   final String pl;
   final String? zeusAvatar;
@@ -80,6 +81,7 @@ class MissionMetadata {
 
   MissionMetadata({
     required this.opId,
+    required this.missionName,
     required this.zeus,
     required this.pl,
     this.zeusAvatar,
@@ -91,6 +93,9 @@ class MissionMetadata {
   factory MissionMetadata.fromJson(Map<String, dynamic> json) {
     return MissionMetadata(
       opId: json['OPID']?.toString() ?? '',
+      missionName: json['concatenated_Operation']?.toString() ??
+          json['Operation']?.toString() ??
+          '',
       zeus: json['concatenated_Zeus']?.toString() ?? '',
       pl: json['concatenated_PL']?.toString() ?? '',
       zeusAvatar: _extractUrl(json['zeusAvatar']),
@@ -125,8 +130,6 @@ class MissionSummary {
   final String? plAvatar;
   final String? zeusId;
   final String? plId;
-  Uint8List? zeusAvatarBytes;
-  Uint8List? plAvatarBytes;
 
   MissionSummary({
     required this.opName,
@@ -144,8 +147,6 @@ class MissionSummary {
     this.plAvatar,
     this.zeusId,
     this.plId,
-    this.zeusAvatarBytes,
-    this.plAvatarBytes,
   });
 
   double get overallScore {
@@ -171,7 +172,6 @@ class LeaderboardEntry {
   final int count;
   final String? avatarUrl;
   final String? userId;
-  Uint8List? avatarBytes;
 
   LeaderboardEntry({
     required this.name,
@@ -179,7 +179,6 @@ class LeaderboardEntry {
     required this.count,
     this.avatarUrl,
     this.userId,
-    this.avatarBytes,
   });
 }
 

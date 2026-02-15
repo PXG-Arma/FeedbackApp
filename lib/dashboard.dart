@@ -10,6 +10,7 @@ import 'widgets/pxg_divider.dart';
 import 'widgets/metrics_displays.dart';
 import 'widgets/glass_card.dart';
 import 'widgets/mesh_background.dart';
+import 'widgets/pxg_avatar.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardData data;
@@ -176,24 +177,20 @@ class DashboardScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _buildPersonnelCard(
+                              _buildPersonnelCard(
                               'ZEUS',
                               latest.zeus,
+                              id: latest.zeusId,
                               icon: FontAwesomeIcons.bolt,
                               color: PhoenixTheme.primary,
-                              avatarUrl: latest.zeusAvatar != null
-                                  ? 'https://corsproxy.io/?${Uri.encodeComponent(latest.zeusAvatar!)}'
-                                  : null,
-                              avatarBytes: latest.zeusAvatarBytes,
                             ),
                             const SizedBox(height: 12),
                             _buildPersonnelCard(
                               'PLATOON LEADER',
                               latest.pl,
+                              id: latest.plId,
                               icon: FontAwesomeIcons.shieldHalved,
                               color: PhoenixTheme.secondary,
-                              avatarUrl: latest.plAvatar,
-                              avatarBytes: latest.plAvatarBytes,
                             ),
                           ],
                         ).animate().fadeIn(delay: 100.ms),
@@ -347,7 +344,7 @@ class DashboardScreen extends StatelessWidget {
                                             e.avgScore,
                                             data.topZeuses.indexOf(e) + 1,
                                             subtitle: '${e.count} MISSIONS',
-                                            avatarBytes: e.avatarBytes,
+                                            userId: e.userId,
                                           ),
                                         ),
                                     const SizedBox(height: 8),
@@ -368,7 +365,7 @@ class DashboardScreen extends StatelessWidget {
                                             e.avgScore,
                                             data.topLeaders.indexOf(e) + 1,
                                             subtitle: '${e.count} MISSIONS',
-                                            avatarBytes: e.avatarBytes,
+                                            userId: e.userId,
                                           ),
                                         ),
                                     const SizedBox(height: 8),
@@ -411,43 +408,19 @@ class DashboardScreen extends StatelessWidget {
   Widget _buildPersonnelCard(
     String title,
     String name, {
+    String? id,
     IconData? icon,
     required Color color,
-    String? imagePath,
-    String? avatarUrl,
-    Uint8List? avatarBytes,
   }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 4),
       child: Row(
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: avatarBytes != null
-                ? Image.memory(avatarBytes, fit: BoxFit.cover)
-                : avatarUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: avatarUrl.startsWith('http')
-                            ? 'https://corsproxy.io/?' +
-                                Uri.encodeComponent(avatarUrl)
-                            : avatarUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Center(
-                          child: Icon(icon, color: Colors.white, size: 20),
-                        ),
-                        errorWidget: (context, url, error) => Center(
-                          child: Icon(icon, color: Colors.white, size: 20),
-                        ),
-                      )
-                    : imagePath != null
-                        ? Image.asset(imagePath, fit: BoxFit.contain)
-                        : Icon(icon, color: Colors.white, size: 24),
+          PXGAvatar(
+            id: id,
+            icon: icon,
+            size: 60,
+            color: color,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -504,7 +477,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildLeaderboardItem(String name, double score, int rank,
-      {required String subtitle, Uint8List? avatarBytes, bool showAvatar = true}) {
+      {required String subtitle, String? userId, bool showAvatar = true}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Row(
@@ -522,29 +495,11 @@ class DashboardScreen extends StatelessWidget {
           ),
           if (showAvatar) ...[
             const SizedBox(width: 8),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: PhoenixTheme.primary.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-                color: PhoenixTheme.cardBg.withValues(alpha: 0.5),
-              ),
-              child: ClipOval(
-                child: avatarBytes != null
-                    ? Image.memory(
-                        avatarBytes,
-                        fit: BoxFit.cover,
-                      )
-                    : const Icon(
-                        FontAwesomeIcons.solidUser,
-                        size: 10,
-                        color: PhoenixTheme.textSecondary,
-                      ),
-              ),
+            PXGAvatar(
+              id: userId,
+              icon: FontAwesomeIcons.solidUser,
+              size: 24,
+              color: PhoenixTheme.primary,
             ),
             const SizedBox(width: 16),
           ] else

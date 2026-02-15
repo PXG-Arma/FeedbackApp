@@ -11,6 +11,10 @@ class IntelligenceService {
   static const String avatarWebhookUrl =
       'https://www.pxghub.com/webhook/get-avatar';
 
+  // Session-level caches
+  static final Map<String, Uint8List?> _avatarCache = {};
+  static final Map<String, Future<Uint8List?>> _inFlightFetches = {};
+
   static Future<DashboardData> fetchData() async {
     try {
       if (webhookUrl.contains('YOUR_N8N')) {
@@ -53,69 +57,9 @@ class IntelligenceService {
             .toList();
 
         final dashboardData = DataProcessor.process(entries, metadata);
-
-        // Map to cache avatar bytes to avoid redundant lookups
-        final Map<String, Uint8List?> avatarCache = {};
-
-        // Helper to fetch and cache avatars for MissionSummary
-        Future<void> fetchAndAssignMission(
-          MissionSummary mission,
-          bool forZeus,
-        ) async {
-          final String? id = forZeus ? mission.zeusId : mission.plId;
-          if (id != null && id.isNotEmpty && id != 'N/A') {
-            if (avatarCache.containsKey(id)) {
-              if (forZeus)
-                mission.zeusAvatarBytes = avatarCache[id];
-              else
-                mission.plAvatarBytes = avatarCache[id];
-            } else {
-              try {
-                final bytes = await fetchAvatar(id);
-                avatarCache[id] = bytes;
-                if (forZeus)
-                  mission.zeusAvatarBytes = bytes;
-                else
-                  mission.plAvatarBytes = bytes;
-              } catch (e) {
-                print('Error fetching avatar for $id: $e');
-              }
-            }
-          }
-        }
-
-        // Helper to fetch and cache avatars for LeaderboardEntry
-        Future<void> fetchAndAssignLeader(LeaderboardEntry entry) async {
-          final String? id = entry.userId;
-          if (id != null && id.isNotEmpty && id != 'N/A') {
-            if (avatarCache.containsKey(id)) {
-              entry.avatarBytes = avatarCache[id];
-            } else {
-              try {
-                final bytes = await fetchAvatar(id);
-                avatarCache[id] = bytes;
-                entry.avatarBytes = bytes;
-              } catch (e) {
-                print('Error fetching leaderboard avatar for $id: $e');
-              }
-            }
-          }
-        }
-
-        // 1. Fetch for latest mission
-        if (dashboardData.missionSummaries.isNotEmpty) {
-          final latest = dashboardData.missionSummaries.first;
-          await fetchAndAssignMission(latest, true);
-          await fetchAndAssignMission(latest, false);
-        }
-
-        // 2. Fetch for Leaderboards (Top 5 each)
-        for (var e in dashboardData.topZeuses.take(5)) {
-          await fetchAndAssignLeader(e);
-        }
-        for (var e in dashboardData.topLeaders.take(5)) {
-          await fetchAndAssignLeader(e);
-        }
+        
+        // We no longer wait for avatars here. 
+        // Individual widgets will trigger their own fetching via fetchAvatar.
 
         return dashboardData;
       } else {
@@ -128,6 +72,25 @@ class IntelligenceService {
   }
 
   static Future<Uint8List?> fetchAvatar(String id) async {
+    if (id.isEmpty || id == 'N/A') return null;
+
+    // 1. Check Cache
+    if (_avatarCache.containsKey(id)) {
+      return _avatarCache[id];
+    }
+
+    // 2. Check in-flight requests
+    if (_inFlightFetches.containsKey(id)) {
+      return _inFlightFetches[id];
+    }
+
+    // 3. Start new fetch
+    final fetchJob = _performAvatarFetch(id);
+    _inFlightFetches[id] = fetchJob;
+    return fetchJob;
+  }
+
+  static Future<Uint8List?> _performAvatarFetch(String id) async {
     try {
       final response = await http.post(
         Uri.parse(avatarWebhookUrl),
@@ -136,18 +99,34 @@ class IntelligenceService {
       );
 
       if (response.statusCode == 200) {
-        return response.bodyBytes;
+        final bytes = response.bodyBytes;
+        _avatarCache[id] = bytes;
+        _inFlightFetches.remove(id);
+        return bytes;
       }
     } catch (e) {
       print('Error calling avatar webhook for $id: $e');
     }
+    
+    _inFlightFetches.remove(id);
+    _avatarCache[id] = null; // Mark as failed in cache to avoid retrying in this session
     return null;
   }
 
   static List<MissionMetadata> getMockMetadata() {
     return [
-      MissionMetadata(opId: 'op123', zeus: 'Johanpe', pl: 'AquaFox'),
-      MissionMetadata(opId: 'op122', zeus: 'ZeusAlpha', pl: 'LeaderBeta'),
+      MissionMetadata(
+        opId: 'op123',
+        missionName: 'Mock Operation X',
+        zeus: 'Johanpe',
+        pl: 'AquaFox',
+      ),
+      MissionMetadata(
+        opId: 'op122',
+        missionName: 'Mock Operation Y',
+        zeus: 'ZeusAlpha',
+        pl: 'LeaderBeta',
+      ),
     ];
   }
 
